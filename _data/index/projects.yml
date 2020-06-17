@@ -1,4 +1,24 @@
-- name: leonids
-  descr: "Bacon ipsum dolor sit amet doner meatball jowl short ribs, chicken prosciutto salami frankfurter. Pig drumstick turducken short ribs, brisket meatloaf ham hock shankle andouille corned beef strip steak. Venison ham bresaola strip steak. Pork belly ribeye prosciutto t-bone."
+- name: Malicious URL detector
+  descr: "Project aimed at detecting whether the URL(s) inputted are malicious or not (good/bad) - for Summer'20 internship."
   image: pong.png
-  github: https://github.com/renyuanz/leonids
+  github: https://github.com/parthdt/MUD-project
+
+- name: Website for Convoquer sports fest
+  descr: "Lead front end developer for the websites for Convoquer'19 and '20."
+  image: pong.png
+  github: https://github.com/coding-club-iit-jammu/convoquer
+
+- name: Facial Recognition mini-project
+  descr: "Small facial recognition project with respectable accuracy using the Haar Cascade classifier."
+  image: pong.png
+  github: https://github.com/parthdt/B.Tech-Codes/tree/master/FacialRecognitionProject
+
+- name: Maze Solver Robot
+  descr: "An arduino program for a Maze solver robot using the right hand rule maze solving algorithm. This was for the Maze-X event at Technunctus'19 Tech Fest at IIT Jammu, and we bagged the first prize."
+  image: pong.png
+  github: https://github.com/parthdt/B.Tech-Codes/tree/master/Maze-X
+
+- name: Criminal Database management system in C++
+  descr: "Used different file management capabilities of C++ to create a database management system to add, delete, and manage records of criminals including a secure login feature for the admin. (Included a personal rendition of reCaptcha type system to detect if human). I was responsible for the working and GUI of the whole program. This project was my first ever project, back in 12th grade, and it motivated me to purse the field of CSE."
+  image: pong.png
+  github: https://github.com/parthdt/B.Tech-Codes/blob/master/CBID.CPP

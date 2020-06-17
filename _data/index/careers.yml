@@ -1,16 +1,11 @@
 # careers section data
 # if you don't have language feature(language.yml is empty), ignore "i18n" items
-- name: Google
-  link: http://www.google.com/
-  date: July 2017 - <i class="fa fa-clock-o" aria-hidden="true" title="Until Now"></i>
-  job: Programming Internship
+- name: Max Secure
+  link: https://www.maxpcsecure.com/
+  date: May 2020 - <i class="fa fa-clock-o" aria-hidden="true" title="Until Now"></i> <br>
+  job: Cyber Security Intern
 
-- name: Facebook
-  link: http://www.facebook.com/
-  date: May 2014 - July 2017
-  job: Web Assistant
-
-- name: SAP
-  link: https://www.sap.com/
-  date: 2010 - 2014
-  job: Software Developer
+- name: IIT Bombay
+  link: http://www.iitb.ac.in/
+  date: May 2019 - July 2019 <br>
+  job: Research Intern (Machine Learning)
