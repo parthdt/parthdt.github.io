@@ -1,10 +1,10 @@
 ---
 layout: post
 title: First Post
-excerpt: "Website under construction."
+excerpt: "First ever post on my first personal website."
 categories: [hello world]
 
 ---
 
-This website is still under construction. You can view my resume however, head over to the [resume](/resume) section!
+Trying to morph this website into a nice and elegant blog. You can also my resume at the [resume](/resume) section! 
 {: .notice}

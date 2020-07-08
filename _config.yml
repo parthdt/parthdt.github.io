@@ -5,7 +5,7 @@
 #
 title: Parth Thakker
 email:
-description: A personal website that's under construction.
+description: Personal website.
 url: https://parthdt.github.io
 keywords: ["blog", "jekyll"]
 
@@ -36,7 +36,7 @@ owner:
   name: Parth Thakker
   avatar: leonids-logo.png
   job: "Computer Science Student"
-  bio: "A cyber security enthusiast's blog."
+  bio: "☯"
   email:
   disqus-shortname:
   twitter: #username

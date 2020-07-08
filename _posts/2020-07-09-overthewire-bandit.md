@@ -2,9 +2,12 @@
 layout: post
 title:  OverTheWire Bandit Levels 1-10
 excerpt: "First attempt at wargames, hopefully a good first writeup as well :D"
-categories: overthewire wargames
+categories: overthewire wargames writeup
 
 ---
+
+This is a simple writeup for the first 10 levels of OverTheWire's [Bandit](https://overthewire.org/wargames/bandit/){:target="_blank"}.
+{: .notice}
 
 ## Level 0
 
