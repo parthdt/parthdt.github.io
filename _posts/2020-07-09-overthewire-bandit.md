@@ -2,12 +2,9 @@
 layout: post
 title:  OverTheWire Bandit Levels 1-10
 excerpt: "First attempt at wargames, hopefully a good first writeup as well :D"
-categories: overthewire wargames writeup
+categories: overthewire wargames
 
 ---
-
-This is a simple writeup for the first 10 levels of OverTheWire's [Bandit](https://overthewire.org/wargames/bandit/){:target="_blank"}.
-{: .notice}
 
 ## Level 0
 
@@ -139,5 +136,159 @@ The password is in data.txt, but it is base64'd! Damn hard to decode, but we do 
 
 ```cat data.txt | base64 -d``` reveals : ```The password is IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR```. Sweet!
 
-##### Remaining levels coming soon :D
+## Level 11
+
+The password was in ```data.txt``` and rotated by 13 positions (ROT13). The rot13 command wasn't there in the bandit server, so copied the contents of the file and did the following in my machine:
+```bash
+echo "Gur cnffjbeq vf 5Gr8L4qetPEsPk8htqjhRK8XSP6x2RHh" | rot13
+The password is 5Te8Y4drgCRfCx8ugdwuEX8KFC6k2EUu
+```
+
+The intended solution (I think) was however:
+```bash
+ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+```
+
+This tr command basically "transaltes" each char to (char+13), same as rot13. Sweet :D
+
+## Level 12
+
+This one had a file ```data.txt``` which contained the hexdump of another file. Using ```xxd -r data.txt``` we can get the reversed binary. This binary was compressed with either ```gzip```, ```bzip2``` or was a ```tar``` file. Moved the file to a folder in /tmp and used file command on each step, then applied the appropriate decompression command based on the compression algorithm.
+```
+gzip -d <file> for gzip compressed files
+bzip2 -d <file for bzip2 compressed files
+tar -xvf <file> for the posix tar files
+```
+
+## Level 13
+
+In this level we had an SSH private key for the bandit14 user, so simply execute:
+```bash
+ssh -i sshkey.private bandit14@localhost
+```
+
+For the password: ```cat /etc/bandit-pass/bandit14```
+
+## Level 14
+
+To get next level's password, submit this level's password to localhost, port 30000. We can use ```nc``` for this:
+```bash
+cat /etc/bandit_pass/bandit14 | nc localhost 30000
+```
+
+## Level 15
+
+We had to submit the password to localhost port 30001 via ssl connection. We can use ```openssl s_client``` for this. I did this first:
+```bash
+cat /etc/bandit_pass/bandit15 | openssl s_client -connect localhost:3000```
+ but couldn't get the password. Then I saw the prompt to add the ```ign_eof``` tag. Added it and got the password:
+```bash
+cat /etc/bandit_pass/bandit15 | openssl s_client -ign_eof -connect localhost:30001
+.
+.
+.
+Correct!
+cluFn7wTiGryunymYOu4RcffSxQluehd
+```
+
+The ```ign_eof``` tag tells the server to not close file immediately after eof (we press enter after the command).
+
+The best way however was:
+```bash
+cat /etc/bandit_pass/bandit15 | openssl s_client -quiet -connect localhost:30001
+```
+
+The ```quiet``` flag turns on the previous flag, and doesn't print excess session and certificate info, giving us a prettier output:
+```bash
+cat /etc/bandit_pass/bandit15 | openssl s_client -quiet -connect localhost:30001
+
+depth=0 CN = localhost
+verify error:num=18:self signed certificate
+verify return:1
+depth=0 CN = localhost
+verify return:1
+Correct!
+cluFn7wTiGryunymYOu4RcffSxQluehd
+```
+## Level 16
+
+For this level we had to perform a port scan, one of the open ports using ssl gave back the creds for the next level, upon receiving the current password.
+
+Option 1, Nmap:
+```bash
+nmap -p 31000-32000 localhost
+
+Starting Nmap 7.40 ( https://nmap.org ) at 2020-07-09 20:10 CEST
+Nmap scan report for localhost (127.0.0.1)
+Host is up (0.00032s latency).
+Not shown: 996 closed ports
+PORT      STATE SERVICE
+31046/tcp open  unknown
+31518/tcp open  unknown
+31691/tcp open  unknown
+31790/tcp open  unknown
+31960/tcp open  unknown
+
+Nmap done: 1 IP address (1 host up) scanned in 0.09 seconds
+```
+
+Option 2, netcat inbuilt port scan utility:
+```bash
+nc -zv localhost 31000-32000
+localhost [127.0.0.1] 31960 (?) open
+localhost [127.0.0.1] 31790 (?) open
+localhost [127.0.0.1] 31691 (?) open
+localhost [127.0.0.1] 31518 (?) open
+localhost [127.0.0.1] 31046 (?) open
+```
+
+One of these ports gave back a private SSH key for the next level.
+
+## Level 17
+
+The password is the only line changed in ```passwords.new```, rest is same as ```passwords.old```. Ran ```diff``` command against the two files and got the pw.
+
+## Level 18
+
+The password for this level is in the ```readme``` file. But, we get logged out immediately as we ssh into the server. We can enter a command at the end of the sshpass command to execute as we enter in, so this is how I solved it (from my machine):
+```bash
+sshpass -f passwords/bandit18 ssh bandit18@bandit.labs.overthewire.org -p 2220 "cat readme"
+```
+
+## Level 19
+
+We have to use the setuid binary present in the home directory for this one:
+```bash
+./bandit20-do cat /etc/bandit_pass/bandit20
+```
+
+## Level 20
+
+For this level, the setuid binary listened to any port we mention, and returns the next pw, if the current pw is sent. So, on one shell:
+```bash
+ ./suconnect 6969
+Read: GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+Password matches, sending next password
+```
+
+We get this message as we sent the correct password from another shell:
+```bash
+nc -lvp 6969
+listening on [any] 6969 ...
+connect to [127.0.0.1] from localhost [127.0.0.1] 49888
+GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
+```
+
+Basically listening on the next level for a pw from the current level.
+
+Feeling like a pentester now :smirk:
+
+##### Remaining levels soon :smile:
+
+
+
+
+
+
 
