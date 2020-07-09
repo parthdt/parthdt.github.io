@@ -1,7 +1,7 @@
-- name: Malicious URL detector
-  descr: "Project aimed at detecting whether the URL(s) inputted are malicious or not (good/bad) - for Summer'20 internship."
+- name: This website!
+  descr: "Personal website for tech blog posts and this resume page."
   image: pong.png
-  github: https://github.com/parthdt/MUD-project
+  github: https://github.com/parthdt/parthdt.github.io
 
 - name: Website for Convoquer sports fest
   descr: "Lead front end developer for the websites for Convoquer'19 and '20."
