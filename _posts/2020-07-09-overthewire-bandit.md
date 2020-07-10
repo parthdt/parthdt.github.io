@@ -149,11 +149,11 @@ The intended solution (I think) was however:
  cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 ```
 
-This tr command basically "transaltes" each char to (char+13), same as rot13. Sweet :D
+This tr command basically "translates" each char to (char+13), same as rot13. Sweet :D
 
 ## Level 12
 
-This one had a file ```data.txt``` which contained the hexdump of another file. Using ```xxd -r data.txt``` we can get the reversed binary. This binary was compressed with either ```gzip```, ```bzip2``` or was a ```tar``` file. Moved the file to a folder in /tmp and used file command on each step, then applied the appropriate decompression command based on the compression algorithm.
+This one had a file ```data.txt``` which contained the hexdump of another file. Using ```xxd -r data.txt``` we can get the reversed binary. This binary was compressed with either ```gzip```, ```bzip2``` or was a ```tar``` file; with multiple layers of compression. Moved the file to a folder in /tmp and used file command on each step, then applied the appropriate decompression command based on the compression algorithm on each layer (there were 9-10 layers of compression).
 ```
 gzip -d <file> for gzip compressed files
 bzip2 -d <file for bzip2 compressed files
@@ -180,7 +180,8 @@ cat /etc/bandit_pass/bandit14 | nc localhost 30000
 
 We had to submit the password to localhost port 30001 via ssl connection. We can use ```openssl s_client``` for this. I did this first:
 ```bash
-cat /etc/bandit_pass/bandit15 | openssl s_client -connect localhost:3000```
+cat /etc/bandit_pass/bandit15 | openssl s_client -connect localhost:3000
+```
  but couldn't get the password. Then I saw the prompt to add the ```ign_eof``` tag. Added it and got the password:
 ```bash
 cat /etc/bandit_pass/bandit15 | openssl s_client -ign_eof -connect localhost:30001
@@ -282,7 +283,7 @@ gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
 
 Basically listening on the next level for a pw from the current level.
 
-Feeling like a pentester now :smirk:
+Feeling like a pentester now :satisfied:
 
 ##### Remaining levels soon :smile:
 
