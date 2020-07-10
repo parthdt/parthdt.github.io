@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  OverTheWire Bandit Levels 1-10
-excerpt: "First attempt at wargames, hopefully a good first writeup as well :D"
-categories: overthewire wargames
+title:  OverTheWire Bandit Write-up
+excerpt: "First attempt at wargames, hopefully a good first write-up as well :D"
+categories: overthewire wargames write-up
 
 ---
 
