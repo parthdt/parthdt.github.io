@@ -1,11 +1,7 @@
 {% if page.author %} {% assign author = site.data.authors[page.author] %}{% else %}{% assign author = site.owner %} {% endif %}
 
 <div class="cover-card table-cell table-middle">
-  {% if author.avatar %}
-  <a href="{{ site.url }}/">
-    <img src="{{ site.url }}/img/{{ author.avatar }}" alt="" class="avatar">
-  </a>
-  {% endif %}
+  <img src="{{ site.url }}/img/Passport Pic 2021.JPG" alt="" width="150" height="175">
   <a href="{{ site.url }}/" class="author_name">{{ author.name }}</a>
   <span class="author_job">{{ author.job }}</span>
   <span class="author_bio mbm">{{ author.bio }}</span>
@@ -22,5 +18,4 @@
     </ul>
   </nav>
   {% include social-links.html %}
-  <script src="https://tryhackme.com/badge/15834"></script>
 </div>

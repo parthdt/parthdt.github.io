@@ -14,7 +14,7 @@ keywords: ["blog", "jekyll"]
 # Jekyll configuration
 ####################################
 #
-timezone:          Asia/Kolkata
+timezone:          Europe/Berlin
 markdown:          kramdown
 highlighter:       rouge
 excerpt_separator: <!--more-->
@@ -29,6 +29,8 @@ kramdown:
 plugins:
   - jemoji
 
+    
+
 #
 ###################################
 # Site Owner configuration
@@ -36,16 +38,16 @@ plugins:
 #
 owner:
   name: Parth Thakker
-  avatar: 
+  avatar: /Passport Pic 2021.JPG
   job: "Computer Science Student"
-  bio: "☯"
+  bio: ""
   email: parth_thakker@hotmail.com
   disqus-shortname:
-  twitter: #username
+  twitter: dr3sden
   facebook: #username
   google:
     plus: #username
-    analytics: UA-172131519-1
+    analytics:
     verify:
     ad-client:
     ad-slot:
@@ -56,7 +58,7 @@ owner:
   linkedin: "parth-thakker-58ab54175/"
   skype: #username
   xing: #username
-  instagram: parthdt
+  instagram: 
   lastfm: #username
   tumblr: #username
   pinterest: #username
