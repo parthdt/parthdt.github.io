@@ -38,7 +38,7 @@
   .author_job {
     display: block;
     color: $primary;
-    font-size: 0em;
+    // font-size: 0em;
     font-weight: 700;
     // text-transform: hidden;
     margin: -5px auto 10px;
@@ -91,7 +91,7 @@
       margin-top: 1em;
       text-transform: lowercase;
       font-size: 85%;
-      color: blue;
+      color: yellowgreen;
       &:hover,
       &:focus {
         color: lightsteelblue;

@@ -1,13 +1,14 @@
 - name: Universität des Saarlandes
   link: https://www.uni-saarland.de/
   date: 2021 - <i class="fa fa-clock-o" aria-hidden="true" title="Until Now"></i> <br>
-  descr: expected graduation in 2021
+  descr: Masters in Informatik
 
 - name: Indian Institute of Technology, Jammu
   link: https://iitjammu.ac.in/
   date: 2017 - 2021</i> <br>
-  descr: expected graduation in 2021
+  descr: Bachelors in Ccomputer Science
 
 - name: Maharaja Agrasen Vidyalaya
   link: https://agrasenvidyalaya.ac.in/
   date: 2015 - 2017 <br>
+  descr: Higher Secondary in PCMC

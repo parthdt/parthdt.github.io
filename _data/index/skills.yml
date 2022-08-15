@@ -2,5 +2,5 @@
 
 label: Ability
 id : cs
-aspects: Ethical Hacking, Networks, C/C++, Linux, Critical Thinking, Python, Learning
-percentage: 50, 60, 70, 50, 80, 50, 90
+aspects: Ethical Hacking, Scripting, Linux, Computer Networks, Python, Binary
+percentage: 60, 50, 50, 75, 80, 60

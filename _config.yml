@@ -39,8 +39,8 @@ plugins:
 owner:
   name: Parth Thakker
   avatar: /Passport Pic 2021.JPG
-  job: "Computer Science Student"
-  bio: ""
+  job: 
+  bio: 
   email: parth_thakker@hotmail.com
   disqus-shortname:
   twitter: dr3sden

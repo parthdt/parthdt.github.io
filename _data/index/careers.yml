@@ -2,6 +2,11 @@
 # if you don't have language feature(language.yml is empty), ignore "i18n" items
 - name: Max Secure
   link: https://www.maxpcsecure.com/
+  date: April 2021 - June 2021 <br>
+  job: Part Time (Firewall Department)
+
+- name: Max Secure
+  link: https://www.maxpcsecure.com/
   date: May 2020 - August 2020 <br>
   job: Cyber Security Intern
 
