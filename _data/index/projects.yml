@@ -1,7 +1,7 @@
-- name: This website!
-  descr: "Personal website for tech blog posts and this resume page."
+- name: Darkshark
+  descr: Packet Sniffer and Malicious Browser Extension. Created using <a href='https://scapy.readthedocs.io/en/latest/index.html'>Scapy</a>.
   image: pong.png
-  github: https://github.com/parthdt/parthdt.github.io
+  github: https://github.com/parthdt/darkshark
 
 - name: Website for Convoquer sports fest
   descr: "Lead front end developer for the websites for Convoquer'19 and '20."
@@ -12,11 +12,6 @@
   descr: "Small facial recognition project with respectable accuracy using the Haar Cascade classifier."
   image: pong.png
   github: https://github.com/parthdt/B.Tech-Codes/tree/master/FacialRecognitionProject
-
-- name: Maze Solver Robot
-  descr: "An arduino program for a Maze solver robot using the right hand rule maze solving algorithm. This was for the Maze-X event at Technunctus'19 Tech Fest at IIT Jammu, and we bagged the first prize."
-  image: pong.png
-  github: https://github.com/parthdt/B.Tech-Codes/tree/master/Maze-X
 
 - name: Criminal Database management system in C++
   descr: "Used different file management capabilities of C++ to create a database management system to add, delete, and manage records of criminals including a secure login feature for the admin. (Included a personal rendition of reCaptcha type system to detect if human). I was responsible for the working and GUI of the whole program. This project was my first ever project, back in 12th grade, and it motivated me to purse the field of CSE."
