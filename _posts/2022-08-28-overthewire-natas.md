@@ -241,6 +241,126 @@ Using this query, I wrote a simple python script to bruteforce the password.
 
 ## Level 16
 
+This level revisited the challenge pattern of levels 9 and 10. We can search for words inside a dictionary containing our input. However, this time:
+> For security reasons, we now filter even more on certain characters    
+
+The source code revealed how the check was performed:
+```php
+if($key != "") {
+    if(preg_match('/[;|&`\'"]/',$key)) {
+        print "Input contains an illegal character!";
+    } else {
+        passthru("grep -i \"$key\" dictionary.txt");
+    }
+}
+```
+So, our input is inside quotes, and some characters are restricted.
+Upon trying some inputs, I came to some conclusive thoughts:
+1. I can do command injection using `$(cmd)`.
+2. Regular injection isn't possible, i.e., I'd have to use the existing `grep -i key dictionary.txt` command to get the password.
+3. Because of the upper thought, I understood that I needed to inject a command that would give a sort of blind injection, and a binary value would be returned, similar to the earlier SQL injection. That is, I'd have to check letter by letter, and given that the particular is inside the password, get an output, say `x` and if not, I get `y`.
+
+I was stuck here for some time. I admit I had to look at other writeups for this part. I just wasn't getting how to get such a binary output. After looking at some writeups, I understood how close I was.
+
+The trick here is to search for a word inside the dictionary, prepended(or appended) with `$(grep <letter exists in natas pass>)`. If letter exists, I would search for `<letter><word in dictionary>`. This would return nothing. If the letter doens't exist, I would search for `<word in dictionary>`. This would return the word. I now have a way to bruteforce the password!
+
+The payload used for bruteforcing: `$(grep -E ^<pass>.* /etc/natas_webpass/natas17)aptest`. This would return the password if it starts with given `<pass>`, and so no output is shown. If it doens't start with `<pass>`, I'd get `aptest` in the output.
+
+Python script written for this -> got the password.
+
+<img src='https://i.kym-cdn.com/entries/icons/mobile/000/028/021/work.jpg' width=300 height=200>
+
+## Level 17
+
+Another SQL injection level, and almost similar to the one in level 15. A look at the sourcecode:
+```php
+if(array_key_exists("username", $_REQUEST)) {
+    $link = mysql_connect('localhost', 'natas17', '<censored>');
+    mysql_select_db('natas17', $link);
+    
+    $query = "SELECT * from users where username=\"".$_REQUEST["username"]."\"";
+    if(array_key_exists("debug", $_GET)) {
+        echo "Executing query: $query<br>";
+    }
+
+    $res = mysql_query($query, $link);
+    if($res) {
+    if(mysql_num_rows($res) > 0) {
+        //echo "This user exists.<br>";
+    } else {
+        //echo "This user doesn't exist.<br>";
+    }
+    } else {
+        //echo "Error in query.<br>";
+    }
+
+    mysql_close($link);
+} else {
+?>
+```
+
+For a second I thought everything is the same. However, there was no output being returned on any input. Then I noticed the comments. 
+So, no output and blind SQL injection. This pointed me towards the obvious solution: ___TIME___.
+
+For this challenge, I used the same script I used for Level 15, but I changed the query to:
+`natas18\" AND password LIKE BINARY '{password}{char}%' AND SLEEP(5) #`. Basically, append a sleep statement at the end, and bruteforce based on request time (For python, we can get it using `response.elapsed.total_seconds()`).
+
+## Level 18
+
+In this level, there was another form with username and password fields. But, there was no database involved. The source code is quite big, I'll put relevant parts below:
+```php
+$maxid = 640; // 640 should be enough for everyone
+.
+.
+.
+    if(array_key_exists("PHPSESSID", $_COOKIE) and isValidID($_COOKIE["PHPSESSID"])) {
+    if(!session_start()) {
+        debug("Session start failed");
+        return false;
+    } else {
+        debug("Session start ok");
+        if(!array_key_exists("admin", $_SESSION)) {
+        debug("Session was old: admin flag set");
+        $_SESSION["admin"] = 0; // backwards compatible, secure
+        }
+        return true;
+    }
+    }
+
+    return false;
+.
+.
+.
+if(my_session_start()) {
+    print_credentials();
+    $showform = false;
+} else {
+    if(array_key_exists("username", $_REQUEST) && array_key_exists("password", $_REQUEST)) {
+    session_id(createID($_REQUEST["username"]));
+    session_start();
+    $_SESSION["admin"] = isValidAdminLogin();
+    debug("New session started");
+    $showform = false;
+    print_credentials();
+    }
+} 
+```
+The first line is what immediately intrigued me. A maximum of 640 user ids. Upon logging in randomly, I noticed that the `PHPSESSID` cookie was a number, between 1-640. Interesting.
+
+I wrote a python script to get the same page but for all these user IDs, and on ID=119, I got the admin rights. Simple Challenge.
+
+## Level 19
+
+This level is similar to the previous level, except:
+> This page uses mostly the same code as the previous level, but session IDs are no longer sequential...     
+
+I inspected the cookie value to see what the user ID actually was, and I got:`PHPSESSID:3131392d61646d696e`. That looks like hex to me. I decoded it to ASCII immediately, as my gut told me to. In ascii it is:`119-admin`.
+
+So, basically, to remove the sequential-ality, if that even means something, it just converts `userid-username` to hex.
+
+I used the script from the previous level, but instead of bruteforcing on integers 1-640, I bruteforced on `hex(<userid>-admin)`. I got the password on user id 281.
+
+## Level 20
 
 
 
