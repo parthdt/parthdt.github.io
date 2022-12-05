@@ -45,6 +45,18 @@ Pretty straightforward. We find the source code on Github by searching `santagif
 
 Pretty Easy till now.
 
+## Task 9, Day 4: Scanning
+
+So, we are introduced to scanning in this task. We have some material about the types of scans, the tools: nmap, nikto etc. Then come the tasks.
+
+Using the nmap scan, we find that the web server is `Apache`. We also see that there are samba shares on the server. Using the command: `smbclient \\\\10.10.181.122\\admins -U ubuntu S@nta2022`, I connect to the share (these creds were given). There, I find the files `flag.txt` and `userlist.txt`. These contain the answers to the questions asked. Task complete. :smile:
+
+## Task 10, Day 5: Brute Forcing
+
+Bruteforcing day. We have a room, whose nmap scan reveals a `vnc` server running. We use `hydra` to bruteforce the creds for the servuce. Hydra, being the cutie it is, finds the password for us. Using `remmina` to connect to the vnc service, we see the flag on the wallpaper of the screen. Done and Dusted.
+
+
+
 
 
 
