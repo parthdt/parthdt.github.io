@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Advent of Cyber TryHackMe 2022
+title: TryHackMe Advent of Cyber 2022
 excerpt: "A walkthrough/attempt writeup for Advent of Cyber"
-categories: write-up
+categories: write-up tryhackme
 ---
 
 > This is a writeup/ thoughts post for the Advent of Cyber 2022 by TryHackMe.
